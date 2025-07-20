@@ -1,0 +1,2 @@
+# subtitleAssistant
+一款将youtube字幕提取并转换成格式化文档并下载到本地的chrome插件
