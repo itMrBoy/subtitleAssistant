@@ -1,11 +1,20 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
+import react from '@vitejs/plugin-react'
 import { crx } from '@crxjs/vite-plugin'
 import manifest from './manifest.config.ts'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), crx({ manifest })],
+  plugins: [
+    react({
+      // 排除 content script 相关文件，避免注入 Fast Refresh 代码
+      exclude: [
+        /src\/content\/.*\.(tsx?|jsx?)$/,
+        /src\/utils\/content\.tsx$/
+      ]
+    }),
+    crx({ manifest })
+  ],
   server: {
     cors: {
       origin: [
