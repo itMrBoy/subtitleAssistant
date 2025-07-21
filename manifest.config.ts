@@ -22,7 +22,7 @@ export default defineManifest({
   },
   "content_scripts":[
     {
-      "js" :["src/content/content.ts"],
+      "js" :["src/content/content.tsx"],
       "matches": ["https://www.youtube.com/*"],
       "run_at": "document_end"
     }
@@ -33,9 +33,13 @@ export default defineManifest({
   "permissions": [
     "downloads",
     "contextMenus",
-    "storage"
+    "storage",
+    "tabs"
   ],
   "host_permissions": [
-    "https://www.youtube.com/*"
+    "https://www.youtube.com/*",
+    "http://localhost:5173/*",
+    "https://127.0.0.1:5173/*",
+    "https://yt2note-production.up.railway.app/*"
   ],
 }) 
