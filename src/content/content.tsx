@@ -1,9 +1,8 @@
 import '@ant-design/v5-patch-for-react-19';
 import 'antd/dist/reset.css';
-import { showMessage } from '../utils';
+import { showMessage } from '../utils/content';
 
 chrome.runtime.onMessage.addListener((request: unknown, _sender: unknown, sendResponse: (response?: unknown) => void) => { 
-  
   if (request && typeof request === 'object' && 'type' in request) { 
     const { type, data, msg } = request as { type: string, data: string, msg: string };
     if (type === "subtitle_downloading") {

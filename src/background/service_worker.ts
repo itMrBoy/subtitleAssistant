@@ -1,4 +1,4 @@
-import { sendMsgByServiceWorker } from "../utils/service-worker-utils";
+import { sendMsgByServiceWorker } from "../utils/serviceWorker";
 
 chrome.runtime.onInstalled.addListener(() => { 
   // 创建右键菜单
@@ -64,7 +64,7 @@ chrome.contextMenus.onClicked.addListener((data: chrome.contextMenus.OnClickData
             chrome.downloads.download({ 
               url: dataUrl, 
               filename: filename,
-              // saveAs: true
+              saveAs: true
             }, (downloadId) => {
               if (chrome.runtime.lastError) {
                 console.error('下载失败:', chrome.runtime.lastError)
