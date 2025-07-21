@@ -28,7 +28,7 @@ export default defineManifest({
     }
   ],
   "background": {
-    "service_worker": "src/background/service_worker.ts"
+    "service_worker": "src/background/serviceWorker.ts"
   },
   "permissions": [
     "downloads",
