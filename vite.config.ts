@@ -38,6 +38,16 @@ export default defineConfig({
       output: {
         manualChunks: undefined
       }
-    }
+    },
+    // 确保CSS被正确提取
+    cssCodeSplit: false
+  },
+  // CSS处理配置
+  css: {
+    preprocessorOptions: {
+      less: {
+        javascriptEnabled: true,
+      },
+    },
   }
 })
