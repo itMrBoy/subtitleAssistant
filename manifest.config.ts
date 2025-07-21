@@ -30,11 +30,13 @@ export default defineManifest({
   "background": {
     "service_worker": "src/background/serviceWorker.ts"
   },
+  "devtools_page": "src/devtools/devtools.html",
   "permissions": [
     "downloads",
     "contextMenus",
     "storage",
-    "tabs"
+    "tabs",
+    "devtools_page"
   ],
   "host_permissions": [
     "https://www.youtube.com/*",

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>YouTube字幕助手</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      padding: 16px;
+      margin: 0;
+      background-color: #f5f5f5;
+    }
+    .panel-content {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h3 {
+      color: #333;
+      margin-top: 0;
+    }
+    .info {
+      color: #666;
+      line-height: 1.5;
+    }
+    .request-log {
+      margin-top: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+      background: #f8f9fa;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    .request-item {
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .request-url {
+      font-family: monospace;
+      font-size: 12px;
+      color: #0066cc;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="panel-content">
+    <h3>🎬 YouTube字幕助手</h3>
+    <div class="info">
+      <p>此面板用于监控YouTube页面的网络请求，特别是字幕相关的API调用。</p>
+      <p>当检测到字幕请求时，会在下方显示详细信息。</p>
+    </div>
+    <div id="requestLog" class="request-log">
+      <div style="color: #999; text-align: center;">等待字幕请求...</div>
+    </div>
+  </div>
+  
+  <script type="module" src="./panel.ts"></script>
+</body>
+</html> 

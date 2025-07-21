@@ -1,0 +1,151 @@
+.popup-container {
+  width: 320px;
+  min-height: 200px;
+  padding: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #ffffff;
+}
+
+.popup-header {
+  text-align: center;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 12px;
+}
+
+.popup-header h3 {
+  margin: 0;
+  color: #1976d2;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.popup-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.language-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.language-section label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.language-select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.language-select:hover {
+  border-color: #1976d2;
+}
+
+.language-select:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+}
+
+.extract-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.extract-button {
+  width: 100%;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #1976d2, #1565c0);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.3);
+}
+
+.extract-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1565c0, #0d47a1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(25, 118, 210, 0.4);
+}
+
+.extract-button:active {
+  transform: translateY(0);
+}
+
+.extract-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.not-youtube {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-size: 14px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  border: 1px dashed #ddd;
+}
+
+.help-section {
+  margin-top: 8px;
+}
+
+.help-section details {
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.help-section summary {
+  padding: 10px 12px;
+  background: #f8f9fa;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
+  border: none;
+  outline: none;
+  user-select: none;
+}
+
+.help-section summary:hover {
+  background: #e9ecef;
+}
+
+.help-content {
+  padding: 12px;
+  background: white;
+  border-top: 1px solid #e0e0e0;
+}
+
+.help-content p {
+  margin: 6px 0;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.help-content strong {
+  color: #333;
+}
