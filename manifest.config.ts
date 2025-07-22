@@ -35,8 +35,7 @@ export default defineManifest({
     "downloads",
     "contextMenus",
     "storage",
-    "tabs",
-    "devtools_page"
+    "tabs"
   ],
   "host_permissions": [
     "https://www.youtube.com/*",

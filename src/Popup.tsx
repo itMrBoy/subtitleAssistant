@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import './popup.css'
+import { getVideoIdFromUrl } from "./utils/utils";
+import { handleSubtitleDownload } from "./utils/serviceWorker";
 
 function Popup() {
   const [language, setLanguage] = useState('简体中文')
   const [isExtracting, setIsExtracting] = useState(false)
   const [isYouTubePage, setIsYouTubePage] = useState(false)
-  const [currentVideoId, setCurrentVideoId] = useState<string | null>(null)
+  const [curURLInfo, setCurURLInfo] = useState<{ hostname: string, videoId: string }>({ hostname: '', videoId: '' })
 
   useEffect(() => {
     chrome.storage.local.get('language', (result) => {
@@ -16,12 +18,12 @@ function Popup() {
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
       const currentTab = tabs[0]
       if (currentTab?.url) {
-        const url = new URL(currentTab.url)
-        const isYT = url.hostname === 'www.youtube.com'
-        const videoId = url.searchParams.get('v')
+        const urlInfo = getVideoIdFromUrl(currentTab.url)
+        const isYT = urlInfo.hostname === 'www.youtube.com'
+        const videoId = urlInfo.videoId
         
         setIsYouTubePage(isYT && !!videoId)
-        setCurrentVideoId(videoId)
+        setCurURLInfo(urlInfo)
       }
     })
   }, [])
@@ -32,78 +34,17 @@ function Popup() {
   }
 
   const handleExtractSubtitles = async () => {
-    if (!isYouTubePage || !currentVideoId) {
+    if (!isYouTubePage || !curURLInfo?.videoId) {
       return
     }
 
     setIsExtracting(true)
     
-    try {
-      // 向当前标签页发送字幕提取请求
-      chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-        if (tabs[0]?.id) {
-          chrome.tabs.sendMessage(tabs[0].id, {
-            type: "extract_subtitles",
-            videoId: currentVideoId
-          }, (response) => {
-            setIsExtracting(false)
-            
-            if (chrome.runtime.lastError) {
-              console.error('发送消息失败:', chrome.runtime.lastError)
-              return
-            }
-
-            if (response?.success && response.subtitleText) {
-              // 字幕提取成功，调用API处理
-              chrome.storage.local.get('Subtitle_Language', (result) => {
-                fetch("http://127.0.0.1:4523/m1/6804322-6517891-default/v2/generate", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    "transcript_text": response.subtitleText,
-                    "target_lang": result.Subtitle_Language || "简体中文"
-                  })
-                })
-                .then(res => res.json())
-                .then(data => {
-                  if (data && data.content) {
-                    // 下载文件
-                    const blob = new Blob([data.content], { type: "text/markdown; charset=utf-8" })
-                    const url = URL.createObjectURL(blob)
-                    
-                    let safeTitle = 'youtube_subtitle'
-                    if (data.title && typeof data.title === 'string' && data.title.trim()) {
-                      safeTitle = data.title.replace(/[<>:"/\\|?*]/g, '_').trim()
-                    }
-                    const filename = `${safeTitle}.md`
-                    
-                    const a = document.createElement('a')
-                    a.href = url
-                    a.download = filename
-                    a.click()
-                    
-                    URL.revokeObjectURL(url)
-                    
-                    // 关闭popup
-                    window.close()
-                  }
-                })
-                .catch(error => {
-                  console.error('API请求失败:', error)
-                })
-              })
-            } else {
-              console.log('字幕提取失败:', response?.error)
-            }
-          })
-        }
-      })
-    } catch (error) {
-      console.error('提取字幕时出错:', error)
+    handleSubtitleDownload(curURLInfo).then(() => {
+      window.close()
+    }).finally(() => {
       setIsExtracting(false)
-    }
+    })
   }
 
   return (
