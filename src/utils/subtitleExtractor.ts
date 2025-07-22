@@ -1,3 +1,28 @@
+import { getVideoIdFromUrl } from "./utils";
+import { ClientType, Innertube } from 'youtubei.js/web'
+
+export async function getTranscript(videoId: string, lang = 'zh') {
+  try {
+    const yt = await Innertube.create({
+      client_type: ClientType.WEB,
+      lang: lang,
+      fetch: async (input, url) => {
+        return fetch(input, url)
+      },
+    })
+    const info = await yt.getInfo(videoId)
+    const scriptInfo = await info.getTranscript()
+    return scriptInfo.transcript?.content?.body?.initial_segments?.map((segment) => ({
+      text: segment.snippet.text,
+      startMs: segment.start_ms,
+      endMs: segment.end_ms,
+    }))
+  } catch (error) {
+    console.error('getTranscript error: ', error)
+    return null
+  }
+}
+
 // YouTube字幕提取工具
 export interface SubtitleItem {
   text: string;
@@ -18,7 +43,7 @@ export interface SubtitleData {
 export async function extractSubtitlesFromPage(): Promise<SubtitleData | null> {
   try {
     // 获取视频ID
-    const videoId = getVideoIdFromUrl();
+    const { videoId } = getVideoIdFromUrl(window.location.href);
     if (!videoId) return null;
 
     // 获取视频标题
@@ -204,14 +229,6 @@ async function collectSubtitlesFromContainer(container: Element): Promise<Subtit
 }
 
 /**
- * 从URL获取视频ID
- */
-function getVideoIdFromUrl(): string | null {
-  const url = new URL(window.location.href);
-  return url.searchParams.get('v');
-}
-
-/**
  * 方案2：通过YouTube内部API获取字幕
  */
 export async function extractSubtitlesFromAPI(videoId: string): Promise<SubtitleData | null> {
@@ -224,9 +241,12 @@ export async function extractSubtitlesFromAPI(videoId: string): Promise<Subtitle
     if (playerResponse?.captions?.playerCaptionsTracklistRenderer?.captionTracks) {
       const captionTracks = playerResponse.captions.playerCaptionsTracklistRenderer.captionTracks;
       
+      console.log("captionTracks: ", captionTracks)
       // 选择第一个可用的字幕轨道
       const track = captionTracks[0] as { baseUrl?: string; languageCode?: string } | undefined;
       if (track?.baseUrl) {
+        console.log("track: ", track)
+        console.log("track.baseUrl: ", track.baseUrl)
         const subtitleXml = await fetch(track.baseUrl).then(res => res.text());
         const subtitles = parseXMLSubtitles(subtitleXml);
         
@@ -266,13 +286,14 @@ function parseXMLSubtitles(xmlText: string): SubtitleItem[] {
  */
 export async function extractSubtitles(): Promise<string | null> {
   try {
-    const videoId = getVideoIdFromUrl();
+    const { videoId } = getVideoIdFromUrl(window.location.href);
     if (!videoId) return null;
 
-    // 方案1：从页面提取
-    console.log('尝试从页面提取字幕...');
+    const result = await getTranscript(videoId)
+    console.log("getTranscript result: ", result)
+
     let subtitleData = await extractSubtitlesFromPage();
-    
+
     // 方案2：从API提取
     if (!subtitleData || subtitleData.subtitles.length === 0) {
       console.log('尝试从API提取字幕...');

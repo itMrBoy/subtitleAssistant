@@ -5,7 +5,7 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "menu-1",
     type:"normal",
-    title: "提取字幕并下载为md",
+    title: "视频转讲义并下载",
     contexts: ["all"],
   })
 })

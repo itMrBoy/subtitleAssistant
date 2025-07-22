@@ -51,6 +51,7 @@ export const handleSubtitleDownload = (url: { hostname: string, videoId: string 
               type: "extract_subtitles",
               videoId: url.videoId
             }, (response) => {
+              console.log("download subtitle response: ", response)
               if (chrome.runtime.lastError) {
                 console.error('发送消息失败:', chrome.runtime.lastError);
                 sendMsgByServiceWorker("subtitle_downloading", "error", "页面通信失败，请刷新页面重试");

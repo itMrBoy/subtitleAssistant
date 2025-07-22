@@ -41,7 +41,7 @@ function Popup() {
     setIsExtracting(true)
     
     handleSubtitleDownload(curURLInfo).then(() => {
-      window.close()
+      // window.close()
     }).finally(() => {
       setIsExtracting(false)
     })
@@ -82,7 +82,7 @@ function Popup() {
               disabled={isExtracting}
               className="extract-button"
             >
-              {isExtracting ? '正在提取...' : '提取字幕并下载'}
+              {isExtracting ? '正在提取...' : '视频转讲义并下载'}
             </button>
           ) : (
             <div className="not-youtube">
@@ -96,7 +96,7 @@ function Popup() {
             <summary>使用说明</summary>
             <div className="help-content">
               <p><strong>方式1 (推荐)：</strong>点击上方按钮直接提取</p>
-              <p><strong>方式2：</strong>右键菜单 → "提取字幕并下载为md"</p>
+              <p><strong>方式2：</strong>右键菜单 → "视频转讲义并下载"</p>
               <p><strong>方式3：</strong>使用开发者工具面板 (技术用户)</p>
             </div>
           </details>
