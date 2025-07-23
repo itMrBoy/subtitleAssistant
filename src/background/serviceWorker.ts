@@ -1,18 +1,27 @@
 import { downloadFile, handleSubtitleContent } from "../utils/utils";
 import { getVideoIdFromUrl } from "../utils/utils";
-chrome.runtime.onInstalled.addListener(() => { 
+import { handleSidePanel } from "../utils/serviceWorker";
+
+
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.create({
+    id: 'preview',
+    title: '预览讲义',
+    contexts: ['all']
+  });
   // 创建右键菜单
   chrome.contextMenus.create({
-    id: "menu-1",
+    id: "download",
     type:"normal",
-    title: "视频转讲义并下载",
+    title: "下载讲义",
     contexts: ["all"],
   })
-})
+});
 
+handleSidePanel()
 
 chrome.contextMenus.onClicked.addListener((data: chrome.contextMenus.OnClickData) => { 
-  if(data.menuItemId === "menu-1") {
+  if(data.menuItemId === "download") {
     const url = getVideoIdFromUrl(data.pageUrl || "")
     handleSubtitleContent(url).then((res = { md: '', filename: '' }) => {
       if (res?.md && res?.filename) {
