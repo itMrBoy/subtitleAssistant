@@ -13,7 +13,7 @@ import { extractSubtitles } from '../utils/subtitleExtractor';
 
 chrome.runtime.onMessage.addListener((request: unknown, _sender: unknown, sendResponse: (response?: unknown) => void) => { 
   if (request && typeof request === 'object' && 'type' in request) { 
-    const { type, data, msg, videoId } = request as { type: string, data?: string, msg?: string, videoId?: string };
+    const { type, data, msg } = request as { type: string, data?: string, msg?: string };
     
     if (type === "subtitle_downloading") {
       // 在页面上显示通知
