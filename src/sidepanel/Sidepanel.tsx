@@ -81,14 +81,14 @@ function SidePanel() {
           margin: '0 0 8px 0',
           color: '#1a73e8'
         }}>
-          YouTube字幕预览
+          YouTube讲义预览
         </h1>
         <p style={{ 
           margin: '0', 
           color: '#5f6368', 
           fontSize: '14px' 
         }}>
-          右键选择"预览讲义"来查看字幕内容
+          右键选择"预览讲义"来查看讲义内容
         </p>
       </div>
 

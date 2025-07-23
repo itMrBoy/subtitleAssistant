@@ -2,15 +2,15 @@ import { getVideoIdFromUrl, handleSubtitleContent } from "./utils";
 
 
 export const sendMsgByServiceWorker = (type: string, data: string, msg: string) => {
-  chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-    if (tabs[0]?.id) {
-      chrome.tabs.sendMessage(tabs[0].id, {
-        type,
-        data,
-        msg: `【youtube字幕提取助手】：${msg}`
-      });
-    }
-  });
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]?.id) {
+            chrome.tabs.sendMessage(tabs[0].id, {
+                type,
+                data,
+                msg: `【youtube字幕提取助手】：${msg}`
+            });
+        }
+    });
 }
 
 // 定义消息类型接口
@@ -51,47 +51,43 @@ const sendMessageToSidePanel = async (message: MessageToSidePanel): Promise<void
     }
 };
 
-export const handleSidePanel = () => {
-    chrome.contextMenus.onClicked.addListener(async(info, tab) => {
-        if (info.menuItemId === 'preview' && tab?.url?.includes('youtube.com')) {
-            try {
-                // This will open the panel in all the pages on the current window.
-                await chrome.sidePanel.open({ windowId: tab.windowId });
-                
-                // 等待sidepanel加载完成
-                await new Promise(resolve => setTimeout(resolve, 500));
-                
-                // 发送loading状态到sidepanel
-                await sendMessageToSidePanel({
-                    type: "preview_loading"
-                });
+export const handleSidePanel = async (tab: chrome.tabs.Tab) => {
+    try {
+        // This will open the panel in all the pages on the current window.
+        await chrome.sidePanel.open({ windowId: tab.windowId });
 
-                const url = getVideoIdFromUrl(tab?.url)
-                
-                try {
-                    const result = await handleSubtitleContent(url);
-                    // handleSubtitleContent 应该返回 { md: string, filename: string } 或者抛出错误
-                    const res: SubtitleResult = result as SubtitleResult;
-                    
-                    // 发送预览数据到sidepanel
-                    await sendMessageToSidePanel({
-                        type: "preview_success",
-                        videoId: url.videoId,
-                        md: res.md,
-                        filename: res.filename
-                    });
-                } catch (error) {
-                    console.error('字幕处理失败:', error);
-                    
-                    // 发送错误消息到sidepanel
-                    await sendMessageToSidePanel({
-                        type: "preview_error",
-                        error: error instanceof Error ? error.message : error?.toString() || '未知错误'
-                    });
-                }
-            } catch (error) {
-                console.error('处理sidepanel操作失败:', error);
-            }
+        // 等待sidepanel加载完成
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // 发送loading状态到sidepanel
+        await sendMessageToSidePanel({
+            type: "preview_loading"
+        });
+
+        const url = getVideoIdFromUrl(tab?.url || '')
+
+        try {
+            const result = await handleSubtitleContent(url);
+            // handleSubtitleContent 应该返回 { md: string, filename: string } 或者抛出错误
+            const res: SubtitleResult = result as SubtitleResult;
+
+            // 发送预览数据到sidepanel
+            await sendMessageToSidePanel({
+                type: "preview_success",
+                videoId: url.videoId,
+                md: res.md,
+                filename: res.filename
+            });
+        } catch (error) {
+            console.error('字幕处理失败:', error);
+
+            // 发送错误消息到sidepanel
+            await sendMessageToSidePanel({
+                type: "preview_error",
+                error: error instanceof Error ? error.message : error?.toString() || '未知错误'
+            });
         }
-    });
+    } catch (error) {
+        console.error('处理sidepanel操作失败:', error);
+    }
 }

@@ -18,7 +18,6 @@ chrome.runtime.onInstalled.addListener(() => {
   })
 });
 
-handleSidePanel()
 
 chrome.contextMenus.onClicked.addListener((data: chrome.contextMenus.OnClickData) => { 
   if(data.menuItemId === "download") {
@@ -30,3 +29,9 @@ chrome.contextMenus.onClicked.addListener((data: chrome.contextMenus.OnClickData
     })
   }
 })
+
+chrome.contextMenus.onClicked.addListener(async(info, tab) => {
+  if (info.menuItemId === 'preview' && tab?.url?.includes('youtube.com')) {
+    handleSidePanel(tab)
+  }
+});

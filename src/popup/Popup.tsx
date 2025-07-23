@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import './popup.css'
 import { getVideoIdFromUrl, downloadFile, handleSubtitleContent } from "../utils/utils";
+import { handleSidePanel } from "../utils/serviceWorker";
 
 function Popup() {
   const [language, setLanguage] = useState('简体中文')
   const [isExtracting, setIsExtracting] = useState(false)
   const [isYouTubePage, setIsYouTubePage] = useState(false)
   const [curURLInfo, setCurURLInfo] = useState<{ hostname: string, videoId: string }>({ hostname: '', videoId: '' })
+  const [tab, setTab] = useState<chrome.tabs.Tab | null>(null)
 
   useEffect(() => {
     chrome.storage.local.get('language', (result) => {
@@ -17,6 +19,8 @@ function Popup() {
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
       const currentTab = tabs[0]
       if (currentTab?.url) {
+        setTab(currentTab)
+
         const urlInfo = getVideoIdFromUrl(currentTab.url)
         const isYT = urlInfo.hostname === 'www.youtube.com'
         const videoId = urlInfo.videoId
@@ -32,17 +36,21 @@ function Popup() {
     chrome.storage.local.set({ Subtitle_Language: e.target.value })
   }
 
-  const handleExtractSubtitles = async () => {
+  const handleExtractSubtitles = async (isDownload: boolean = false) => {
     if (!isYouTubePage || !curURLInfo?.videoId) {
       return
     }
 
     setIsExtracting(true)
     
-    handleSubtitleContent(curURLInfo).then((ress = { md: '', filename: '' }) => {
+    handleSubtitleContent(curURLInfo).then((res = { md: '', filename: '' }) => {
       console.log("res: ", res)
       if (res?.md && res?.filename) {
-        downloadFile(res.md, res.filename)
+        if (isDownload) {
+          downloadFile(res.md, res.filename)
+        } else {
+          handleSidePanel(tab as chrome.tabs.Tab)
+        }
       }
       // window.close()
     }).finally(() => {
@@ -80,13 +88,22 @@ function Popup() {
 
         <div className="extract-section">
           {isYouTubePage ? (
-            <button 
-              onClick={handleExtractSubtitles}
-              disabled={isExtracting}
-              className="extract-button"
-            >
-              {isExtracting ? '正在提取...' : '视频转讲义并下载'}
-            </button>
+            <>
+              <button 
+                onClick={() => handleExtractSubtitles(false)}
+                disabled={isExtracting}
+                className="extract-button"
+              >
+                {isExtracting ? '正在提取...' : '视频转讲义并预览'}
+              </button>
+              <button 
+                onClick={() => handleExtractSubtitles(true)}
+                disabled={isExtracting}
+                className="extract-button"
+              >
+                {isExtracting ? '正在提取...' : '视频转讲义并下载'}
+              </button>
+            </>
           ) : (
             <div className="not-youtube">
               <p>请在YouTube视频页面使用此功能</p>
@@ -100,7 +117,7 @@ function Popup() {
             <div className="help-content">
               <p><strong>方式1 (推荐)：</strong>点击上方按钮直接提取</p>
               <p><strong>方式2：</strong>右键菜单 → "视频转讲义并下载"</p>
-              <p><strong>方式3：</strong>使用开发者工具面板 (技术用户)</p>
+              {/* <p><strong>方式3：</strong>使用开发者工具面板 (技术用户)</p> */}
             </div>
           </details>
         </div>
