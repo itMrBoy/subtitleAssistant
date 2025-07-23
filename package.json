@@ -38,6 +38,7 @@
   "dependencies": {
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "antd": "^5.26.6",
+    "markdown-to-jsx": "^7.7.12",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "youtubei.js": "^15.0.0"
