@@ -1,4 +1,4 @@
-import { handleSubtitleDownload } from "../utils/serviceWorker";
+import { handleSubtitleDownload } from "../utils/utils";
 import { getVideoIdFromUrl } from "../utils/utils";
 chrome.runtime.onInstalled.addListener(() => { 
   // 创建右键菜单

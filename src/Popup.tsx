@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import './popup.css'
-import { getVideoIdFromUrl } from "./utils/utils";
-import { handleSubtitleDownload } from "./utils/serviceWorker";
+import { getVideoIdFromUrl, handleSubtitleDownload } from "./utils/utils";
 
 function Popup() {
   const [language, setLanguage] = useState('简体中文')
