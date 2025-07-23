@@ -106,6 +106,7 @@ export const handleSubtitleContent = (url: { hostname: string, videoId: string }
           }
           const filename = `${safeTitle}.md`
 
+          sendMsgByServiceWorker("subtitle_downloading", "success", `${filename} 解析成功`)
           // downloadFile(md, filename)
           resolve({ md, filename })
         }
