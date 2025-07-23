@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import './popup.css'
-import { getVideoIdFromUrl, handleSubtitleDownload } from "./utils/utils";
+import { getVideoIdFromUrl, downloadFile, handleSubtitleContent } from "./utils/utils";
 
 function Popup() {
   const [language, setLanguage] = useState('简体中文')
@@ -39,7 +39,11 @@ function Popup() {
 
     setIsExtracting(true)
     
-    handleSubtitleDownload(curURLInfo).then(() => {
+    handleSubtitleContent(curURLInfo).then((ress = { md: '', filename: '' }) => {
+      console.log("res: ", res)
+      if (res?.md && res?.filename) {
+        downloadFile(res.md, res.filename)
+      }
       // window.close()
     }).finally(() => {
       setIsExtracting(false)

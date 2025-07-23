@@ -36,7 +36,7 @@ export const downloadFile = (md: string, filename: string) => {
   reader.readAsDataURL(blob)
 }
 
-export const handleSubtitleDownload = (url: { hostname: string, videoId: string } = { hostname: "", videoId: "" }) => {
+export const handleSubtitleContent = (url: { hostname: string, videoId: string } = { hostname: "", videoId: "" }) => {
   return new Promise((resolve, reject) => {
     chrome.storage.local.get('Subtitle_Language', (result) => {
       if (url.hostname === "www.youtube.com" && url.videoId) {
@@ -106,8 +106,8 @@ export const handleSubtitleDownload = (url: { hostname: string, videoId: string 
           }
           const filename = `${safeTitle}.md`
 
-          downloadFile(md, filename)
-          resolve(true)
+          // downloadFile(md, filename)
+          resolve({ md, filename })
         }
 
         function handleApiError(error: unknown) {

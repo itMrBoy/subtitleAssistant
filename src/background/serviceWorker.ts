@@ -1,4 +1,4 @@
-import { handleSubtitleDownload } from "../utils/utils";
+import { downloadFile, handleSubtitleContent } from "../utils/utils";
 import { getVideoIdFromUrl } from "../utils/utils";
 chrome.runtime.onInstalled.addListener(() => { 
   // 创建右键菜单
@@ -14,6 +14,10 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.contextMenus.onClicked.addListener((data: chrome.contextMenus.OnClickData) => { 
   if(data.menuItemId === "menu-1") {
     const url = getVideoIdFromUrl(data.pageUrl || "")
-    handleSubtitleDownload(url)
+    handleSubtitleContent(url).then((res = { md: '', filename: '' }) => {
+      if (res?.md && res?.filename) {
+        downloadFile(res.md, res.filename)
+      }
+    })
   }
 })
