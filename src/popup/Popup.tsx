@@ -42,20 +42,19 @@ function Popup() {
     }
 
     setIsExtracting(true)
-    
-    handleSubtitleContent(curURLInfo).then((res = { md: '', filename: '' }) => {
-      console.log("res: ", res)
-      if (res?.md && res?.filename) {
-        if (isDownload) {
+    if (isDownload) {
+      handleSubtitleContent(curURLInfo).then((res = { md: '', filename: '' }) => {
+        if (res?.md && res?.filename) {
           downloadFile(res.md, res.filename)
-        } else {
-          handleSidePanel(tab as chrome.tabs.Tab)
         }
-      }
-      // window.close()
-    }).finally(() => {
-      setIsExtracting(false)
-    })
+      }).finally(() => {
+        setIsExtracting(false)
+      })
+    } else {
+      handleSidePanel(tab as chrome.tabs.Tab).finally(() => {
+        setIsExtracting(false)
+      })
+    }
   }
 
   return (
