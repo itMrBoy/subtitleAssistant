@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Markdown from 'markdown-to-jsx'
 import { downloadFile } from '../utils/utils'
+import SimpleMermaidDiagram from '../components/SimpleMermaidDiagram'
 
 interface SubtitleData {
   md: string;
@@ -16,6 +17,17 @@ interface MessageData {
   error?: string;
 }
 
+interface CodeComponentProps {
+  children: React.ReactNode;
+  className?: string;
+  [key: string]: unknown;
+}
+
+interface PreComponentProps {
+  children: React.ReactNode;
+  [key: string]: unknown;
+}
+
 function SidePanel() {
   const [loading, setLoading] = useState(false)
   const [subtitleData, setSubtitleData] = useState<SubtitleData | null>(null)
@@ -25,7 +37,7 @@ function SidePanel() {
     // 监听来自background script的消息
     const messageListener = (
       message: MessageData,
-      sender: chrome.runtime.MessageSender,
+      _sender: chrome.runtime.MessageSender,
       sendResponse: (response?: { success: boolean }) => void
     ) => {
       if (message.type === 'preview_success') {
@@ -278,25 +290,77 @@ function SidePanel() {
                     }
                   },
                   code: {
-                    props: {
-                      style: { 
-                        backgroundColor: '#f8f9fa',
-                        padding: '2px 4px',
-                        borderRadius: '4px',
-                        fontSize: '90%',
-                        fontFamily: 'monospace'
+                    component: ({ children, className, ...props }: CodeComponentProps) => {
+                      // 检查是否是内联代码或代码块
+                      if (className && className.includes('lang-mermaid')) {
+                        return <SimpleMermaidDiagram code={children as string} />
                       }
+                      
+                      return (
+                        <code 
+                          {...props}
+                          style={{ 
+                            backgroundColor: '#f8f9fa',
+                            padding: '2px 4px',
+                            borderRadius: '4px',
+                            fontSize: '90%',
+                            fontFamily: 'monospace'
+                          }}
+                        >
+                          {children}
+                        </code>
+                      )
                     }
                   },
                   pre: {
-                    props: {
-                      style: { 
-                        backgroundColor: '#f8f9fa',
-                        padding: '12px',
-                        borderRadius: '6px',
-                        overflow: 'auto',
-                        marginBottom: '8px'
+                    component: ({ children, ...props }: PreComponentProps) => {                      
+                      // 检查子元素是否包含 Mermaid 代码
+                      if (children && typeof children === 'object' && children !== null && 
+                          'props' in children && children.props && 
+                          typeof children.props === 'object' && children.props !== null &&
+                          'className' in children.props && 
+                          typeof children.props.className === 'string' &&
+                          children.props.className.includes('lang-mermaid') &&
+                          'children' in children.props) {
+                        return <SimpleMermaidDiagram code={children.props.children as string} />
                       }
+                      
+                      // 也检查直接的文本内容是否看起来像 Mermaid 语法
+                      const content = typeof children === 'string' ? children : 
+                                      (children && typeof children === 'object' && children !== null && 
+                                       'props' in children && children.props && 
+                                       typeof children.props === 'object' && 'children' in children.props) 
+                                      ? children.props.children : children;
+                      
+                      if (typeof content === 'string' && 
+                          (content.trim().startsWith('graph') || 
+                           content.trim().startsWith('flowchart') ||
+                           content.trim().startsWith('sequenceDiagram') ||
+                           content.trim().startsWith('classDiagram') ||
+                           content.trim().startsWith('stateDiagram') ||
+                           content.trim().startsWith('erDiagram') ||
+                           content.trim().startsWith('journey') ||
+                           content.trim().startsWith('gantt') ||
+                           content.trim().startsWith('pie') ||
+                           content.trim().startsWith('gitGraph') ||
+                           content.trim().startsWith('mindmap'))) {
+                        return <SimpleMermaidDiagram code={content} />
+                      }
+                      
+                      return (
+                        <pre 
+                          {...props}
+                          style={{ 
+                            backgroundColor: '#f8f9fa',
+                            padding: '12px',
+                            borderRadius: '6px',
+                            overflow: 'auto',
+                            marginBottom: '8px'
+                          }}
+                        >
+                          {children}
+                        </pre>
+                      )
                     }
                   }
                 }
