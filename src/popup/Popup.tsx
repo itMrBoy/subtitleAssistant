@@ -43,7 +43,7 @@ function Popup() {
 
     setIsExtracting(true)
     if (isDownload) {
-      handleSubtitleContent(curURLInfo).then((res = { md: '', filename: '' }) => {
+      handleSubtitleContent(curURLInfo).then((res) => {
         if (res?.md && res?.filename) {
           downloadFile(res.md, res.filename)
         }

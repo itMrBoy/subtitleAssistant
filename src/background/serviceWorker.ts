@@ -22,7 +22,7 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.contextMenus.onClicked.addListener((data: chrome.contextMenus.OnClickData) => { 
   if(data.menuItemId === "download") {
     const url = getVideoIdFromUrl(data.pageUrl || "")
-    handleSubtitleContent(url).then((res = { md: '', filename: '' }) => {
+    handleSubtitleContent(url).then((res) => {
       if (res?.md && res?.filename) {
         downloadFile(res.md, res.filename)
       }
