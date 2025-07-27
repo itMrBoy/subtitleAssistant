@@ -33,9 +33,6 @@ chrome.contextMenus.onClicked.addListener(async(info, tab) => {
   if (info.menuItemId === 'preview') {
     if (tab?.url?.includes('youtube.com')) {
       try {
-        // 在用户手势上下文中立即打开sidepanel
-        await chrome.sidePanel.open({ tabId: tab.id, windowId: tab.windowId });
-        // 然后处理数据加载（这不需要用户手势上下文）
         handleSidePanel(tab).catch(error => {
           console.error('处理sidepanel数据失败:', error);
         });

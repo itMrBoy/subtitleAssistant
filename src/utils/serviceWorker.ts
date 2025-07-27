@@ -52,20 +52,15 @@ const sendMessageToSidePanel = async (message: MessageToSidePanel): Promise<void
 
 export const handleSidePanel = async (tab: chrome.tabs.Tab) => {
     try {
-        // 确保为该标签页配置了sidepanel（用于popup调用场景）
+        // 打开sidepanel, 且在service worker中不允许放在异步操作之后，否则sidepanel会因为丢失gesture作用域而无法打开
+        await chrome.sidePanel.open({ tabId: tab.id, windowId: tab.windowId });
+
+        // 确保为该标签页配置了sidepanel
         await chrome.sidePanel.setOptions({
             tabId: tab.id,
             path: 'src/sidepanel/sidepanel.html',
             enabled: true
         });
-
-        // 如果是从popup调用，需要打开sidepanel
-        try {
-            await chrome.sidePanel.open({ tabId: tab.id, windowId: tab.windowId });
-        } catch (openError) {
-            // 如果是从service worker调用，sidepanel可能已经打开，忽略错误
-            console.log('Sidepanel可能已经打开:', openError);
-        }
 
         // 等待sidepanel加载完成
         await new Promise(resolve => setTimeout(resolve, 500));
