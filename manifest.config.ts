@@ -35,10 +35,11 @@ export default defineManifest({
   "background": {
     "service_worker": "src/background/serviceWorker.ts"
   },
-  "devtools_page": "src/devtools/devtools.html",
-  "side_panel": {
-    "default_path": "src/sidepanel/sidepanel.html"
-  },
+  // "devtools_page": "src/devtools/devtools.html",
+  // 注释掉全局sidepanel配置，改为特定标签页动态配置
+  // "side_panel": {
+  //   "default_path": "src/sidepanel/sidepanel.html"
+  // },
   "permissions": [
     "downloads",
     "contextMenus",
@@ -56,7 +57,10 @@ export default defineManifest({
     "https://www.googleapis.com/*",
     "http://localhost:5173/*",
     "https://127.0.0.1:5173/*",
-    "https://yt2note-production.up.railway.app/*"
+    "ws://localhost:5173/*",
+    // "https://yt2note-production.up.railway.app/*",
+    "http://127.0.0.1:4523/*",
+    "https://127.0.0.1:4523/*"
   ],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
@@ -64,7 +68,7 @@ export default defineManifest({
   "web_accessible_resources": [
     {
       "resources": ["src/content/content.tsx"],
-      "matches": ["https://www.youtube.com/*", "https://youtube.com/*", "https://m.youtube.com/*"]
+      "matches": ["https://www.youtube.com/*", "https://youtube.com/*", "https://m.youtube.com/*", "http://localhost:5173/*", "https://127.0.0.1:5173/*", "ws://localhost:5173/*"]
     }
   ]
 }) 

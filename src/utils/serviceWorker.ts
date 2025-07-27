@@ -1,6 +1,5 @@
 import { getVideoIdFromUrl, handleSubtitleContent } from "./utils";
 
-
 export const sendMsgByServiceWorker = (type: string, data: string, msg: string) => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs[0]?.id) {
@@ -53,8 +52,20 @@ const sendMessageToSidePanel = async (message: MessageToSidePanel): Promise<void
 
 export const handleSidePanel = async (tab: chrome.tabs.Tab) => {
     try {
-        // This will open the panel in all the pages on the current window.
-        await chrome.sidePanel.open({ windowId: tab.windowId });
+        // 确保为该标签页配置了sidepanel（用于popup调用场景）
+        await chrome.sidePanel.setOptions({
+            tabId: tab.id,
+            path: 'src/sidepanel/sidepanel.html',
+            enabled: true
+        });
+
+        // 如果是从popup调用，需要打开sidepanel
+        try {
+            await chrome.sidePanel.open({ tabId: tab.id, windowId: tab.windowId });
+        } catch (openError) {
+            // 如果是从service worker调用，sidepanel可能已经打开，忽略错误
+            console.log('Sidepanel可能已经打开:', openError);
+        }
 
         // 等待sidepanel加载完成
         await new Promise(resolve => setTimeout(resolve, 500));
